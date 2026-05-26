@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Ticket #{{ sale.id }}{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto">
+    <div class="bg-white rounded-xl shadow-lg p-6">
+
+        <!-- Header ticket -->
+        <div class="text-center border-b pb-4 mb-4">
+            <h1 class="text-2xl font-bold text-gray-800">🧾 Ticket de Venta</h1>
+            <p class="text-gray-500 text-sm mt-1">
+                #{{ sale.id }} — {{ sale.created_at|date:"d/m/Y H:i" }}
+            </p>
+            <p class="text-gray-500 text-sm">
+                Vendedor: {{ sale.seller.username|default:"Sin asignar" }}
+            </p>
+        </div>
+
+        <!-- Productos -->
+        <div class="divide-y divide-gray-100 mb-4">
+            {% for item in sale.items.all %}
+            <div class="flex justify-between py-2">
+                <div>
+                    <p class="font-medium text-gray-800 text-sm">{{ item.product.name }}</p>
+                    <p class="text-xs text-gray-400">
+                        {{ item.quantity }} x ${{ item.unit_price|floatformat:0 }}
+                    </p>
+                </div>
+                <p class="font-bold text-gray-800">
+                    ${{ item.subtotal|floatformat:0 }}
+                </p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Totales -->
+        <div class="bg-gray-50 rounded-lg p-4 mb-4">
+            <div class="flex justify-between items-center">
+                <span class="font-medium text-gray-600">Total:</span>
+                <span class="text-2xl font-bold text-gray-900">
+                    ${{ sale.total_amount|floatformat:0 }}
+                </span>
+            </div>
+            <div class="flex justify-between items-center mt-1">
+                <span class="text-sm text-gray-500">Método de pago:</span>
+                <span class="text-sm font-medium">
+                    {{ sale.get_payment_method_display }}
+                </span>
+            </div>
+            {% if sale.change_due %}
+            <div class="flex justify-between items-center mt-1">
+                <span class="text-sm text-gray-500">Vuelto:</span>
+                <span class="text-sm font-bold text-green-600">
+                    ${{ sale.change_due|floatformat:0 }}
+                </span>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Botones -->
+        <div class="flex gap-3">
+            <a href="{% url 'sales:pos' %}"
+               class="flex-1 bg-blue-600 text-white py-3 rounded-lg font-bold
+                      hover:bg-blue-700 transition text-center">
+                🛒 Nueva Venta
+            </a>
+            <button onclick="window.print()"
+                    class="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg
+                           font-bold hover:bg-gray-300 transition">
+                🖨 Imprimir
+            </button>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

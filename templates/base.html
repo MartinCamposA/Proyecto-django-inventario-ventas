@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}POS System{% endblock %}</title>
+
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
+    <!-- Estilos propios -->
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+    <!-- NAVBAR -->
+    <nav class="bg-gray-900 text-white px-6 py-3 flex items-center justify-between shadow-lg">
+        <div class="flex items-center gap-6">
+            <span class="text-xl font-bold text-blue-400">💼 POS System</span>
+            <a href="{% url 'sales:pos' %}" class="hover:text-blue-300 transition">
+                🛒 Caja
+            </a>
+            <a href="/inventario/" class="hover:text-blue-300 transition">
+                📦 Inventario
+            </a>
+            <a href="/reportes/" class="hover:text-blue-300 transition">
+                📊 Reportes
+            </a>
+        </div>
+        <div class="flex items-center gap-4">
+            <span class="text-gray-400 text-sm">
+                👤 {{ request.user.username }}
+            </span>
+            <a href="/admin/"
+               class="text-xs bg-gray-700 px-3 py-1 rounded hover:bg-gray-600">
+                Admin
+            </a>
+        </div>
+    </nav>
+
+    <!-- MENSAJES -->
+    {% if messages %}
+        <div class="fixed top-4 right-4 z-50 flex flex-col gap-2">
+            {% for message in messages %}
+                <div data-alert
+                     class="px-4 py-3 rounded shadow-lg text-white font-medium
+                     {% if message.tags == 'error' %}bg-red-500
+                     {% elif message.tags == 'success' %}bg-green-500
+                     {% else %}bg-blue-500{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="p-6">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Scripts globales -->
+    <script src="{% static 'js/main.js' %}"></script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

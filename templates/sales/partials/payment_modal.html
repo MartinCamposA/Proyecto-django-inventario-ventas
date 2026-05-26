@@ -1,0 +1,91 @@
+<div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md mx-4">
+
+    <h2 class="text-xl font-bold text-gray-800 mb-4">
+        {% if payment_method == "CASH" %}
+            💵 Pago en Efectivo
+        {% else %}
+            💳 Pago con Tarjeta
+        {% endif %}
+    </h2>
+
+    <div class="bg-gray-50 rounded-lg p-4 mb-4">
+        <div class="flex justify-between items-center">
+            <span class="text-gray-600">Total a pagar:</span>
+            <span class="text-3xl font-bold text-gray-900">
+                ${{ cart_total|floatformat:0 }}
+            </span>
+        </div>
+    </div>
+
+    <form hx-post="/ventas/caja/confirmar/"
+          hx-target="body"
+          hx-swap="none">
+        {% csrf_token %}
+        <input type="hidden" name="payment_method" value="{{ payment_method }}">
+
+        {% if payment_method == "CASH" %}
+            <!-- Campo monto recibido -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Monto recibido del cliente:
+                </label>
+                <input
+                    type="number"
+                    name="amount_tendered"
+                    id="amount-tendered"
+                    min="{{ cart_total }}"
+                    step="1"
+                    autofocus
+                    placeholder="Ej: 5000"
+                    class="w-full border-2 border-gray-300 rounded-lg px-4 py-3
+                           text-xl font-bold focus:outline-none focus:border-green-500
+                           focus:ring-2 focus:ring-green-200 transition"
+                    oninput="calcularVuelto(this.value)"
+                >
+            </div>
+
+            <!-- Vuelto calculado en tiempo real -->
+            <div class="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
+                <div class="flex justify-between items-center">
+                    <span class="text-green-700 font-medium">Vuelto:</span>
+                    <span id="change-display"
+                          class="text-2xl font-bold text-green-600">
+                        $0
+                    </span>
+                </div>
+            </div>
+
+        {% else %}
+            <!-- Flujo tarjeta: solo confirmación manual -->
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4 text-center">
+                <p class="text-blue-800 font-medium">
+                    ¿La terminal POS aprobó el pago?
+                </p>
+                <p class="text-blue-600 text-sm mt-1">
+                    Confirma solo después de que la terminal muestre "APROBADO"
+                </p>
+            </div>
+        {% endif %}
+
+        <!-- Botones -->
+        <div class="flex gap-3">
+            <button
+                type="button"
+                onclick="document.getElementById('payment-modal-container').classList.add('hidden')"
+                class="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg
+                       font-bold hover:bg-gray-300 transition">
+                Cancelar
+            </button>
+            <button
+                type="submit"
+                class="flex-1 bg-green-600 text-white py-3 rounded-lg
+                       font-bold hover:bg-green-700 transition">
+                ✅ Confirmar Venta
+            </button>
+        </div>
+    </form>
+</div>
+
+{% if payment_method == "CASH" %}
+<script src="{% static 'js/payment_modal.js' %}"></script>
+{% endif %}
