@@ -8,10 +8,9 @@
 {% endblock %}
 
 {% block content %}
-<!-- (el resto del contenido no cambia) -->
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
 
-    <!-- ── COLUMNA IZQUIERDA: Scanner + Búsqueda ── -->
+    <!-- ── COLUMNA IZQUIERDA: Scanner ── -->
     <div class="lg:col-span-2 flex flex-col gap-4">
 
         <!-- Input para pistola de código de barras -->
@@ -19,7 +18,7 @@
             <h2 class="text-lg font-bold text-gray-700 mb-3">
                 🔫 Escanear Producto
             </h2>
-            <form hx-post="/ventas/caja/agregar/"
+            <form hx-post="{% url 'sales:add_to_cart' %}"
                   hx-target="#cart-container"
                   hx-swap="outerHTML"
                   hx-on::after-request="this.reset(); document.getElementById('sku-input').focus()">
@@ -43,27 +42,28 @@
                     </button>
                 </div>
             </form>
-
-            <!-- Mensaje de error si el producto no existe -->
-            {% if error_message %}
-                <p class="mt-2 text-red-500 text-sm font-medium">
-                    ⚠ {{ error_message }}
-                </p>
-            {% endif %}
         </div>
 
-        <!-- Área de información del último producto escaneado -->
-        <div id="last-scanned" class="bg-white rounded-xl shadow p-4 min-h-20
-                                       flex items-center justify-center text-gray-400">
+        <!-- Último producto escaneado -->
+        <div id="last-scanned"
+             class="bg-white rounded-xl shadow p-4 min-h-20
+                    flex items-center justify-center text-gray-400">
             <p>El último producto escaneado aparecerá aquí...</p>
         </div>
     </div>
 
     <!-- ── COLUMNA DERECHA: Carrito ── -->
     <div class="lg:col-span-1">
-        <!-- El carrito se actualiza via HTMX sin recargar la página -->
         {% include "sales/partials/cart.html" %}
     </div>
 
+</div>
+
+<!-- ── MODAL DE PAGO ── -->
+<div id="payment-modal-container"
+     class="hidden fixed inset-0 z-50
+            bg-black bg-opacity-60
+            flex items-center justify-center"
+     onclick="cerrarModal()">
 </div>
 {% endblock %}

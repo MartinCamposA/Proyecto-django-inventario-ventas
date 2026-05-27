@@ -16,8 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic import RedirectView
 
 urlpatterns = [
+    # Página raíz → redirige automáticamente a la caja
+    path("", RedirectView.as_view(url="/ventas/caja/"), name="home"),
+
     path("admin/", admin.site.urls),
     path("inventario/", include("apps.inventory.urls")),
     path("ventas/", include("apps.sales.urls")),

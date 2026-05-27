@@ -11,70 +11,59 @@
     <!-- Lista de productos en el carrito -->
     <div class="flex-1 overflow-y-auto divide-y divide-gray-100 max-h-96">
         {% if cart_items %}
-            {% for item in cart_items %}
-            <div class="flex items-center gap-3 px-4 py-3">
+        {% for item in cart_items %}
+        <div class="flex items-center gap-3 px-4 py-3">
 
-                <!-- Info del producto -->
-                <div class="flex-1 min-w-0">
-                    <p class="font-medium text-gray-800 text-sm truncate">
-                        {{ item.name }}
-                    </p>
-                    <p class="text-xs text-gray-400">{{ item.sku }}</p>
-                </div>
+            <!-- Info del producto -->
+            <div class="flex-1 min-w-0">
+                <p class="font-medium text-gray-800 text-sm truncate">
+                    {{ item.name }}
+                </p>
+                <p class="text-xs text-gray-400">{{ item.sku }}</p>
+            </div>
 
-                <!-- Controles de cantidad -->
-                <div class="flex items-center gap-1">
-                    <button
-                        hx-post="/ventas/caja/actualizar/"
-                        hx-target="#cart-container"
-                        hx-swap="outerHTML"
-                        hx-vals='{"product_id": "{{ item.product_id }}", "quantity": "{{ item.quantity|add:"-1" }}"}'
-                        class="w-7 h-7 bg-gray-200 rounded-full text-gray-700
+            <!-- Controles de cantidad -->
+            <div class="flex items-center gap-1">
+                <button hx-post="/ventas/caja/actualizar/" hx-target="#cart-container" hx-swap="outerHTML"
+                    hx-vals='{"product_id": "{{ item.product_id }}", "quantity": "{{ item.quantity|add:"-1" }}"}' class="w-7 h-7 bg-gray-200 rounded-full text-gray-700
                                font-bold hover:bg-red-100 hover:text-red-600 transition text-sm">
-                        −
-                    </button>
-                    <span class="w-8 text-center font-bold text-gray-800">
-                        {{ item.quantity }}
-                    </span>
-                    <button
-                        hx-post="/ventas/caja/actualizar/"
-                        hx-target="#cart-container"
-                        hx-swap="outerHTML"
-                        hx-vals='{"product_id": "{{ item.product_id }}", "quantity": "{{ item.quantity|add:"1" }}"}'
-                        class="w-7 h-7 bg-gray-200 rounded-full text-gray-700
-                               font-bold hover:bg-green-100 hover:text-green-600 transition text-sm">
-                        +
-                    </button>
-                </div>
-
-                <!-- Subtotal -->
-                <div class="text-right min-w-16">
-                    <p class="font-bold text-gray-800 text-sm">
-                        ${{ item.subtotal|floatformat:0 }}
-                    </p>
-                    <p class="text-xs text-gray-400">
-                        ${{ item.unit_price|floatformat:0 }} c/u
-                    </p>
-                </div>
-
-                <!-- Botón eliminar -->
-                <button
-                    hx-post="/ventas/caja/eliminar/"
-                    hx-target="#cart-container"
-                    hx-swap="outerHTML"
-                    hx-vals='{"product_id": "{{ item.product_id }}"}'
-                    class="text-gray-300 hover:text-red-500 transition text-lg font-bold">
-                    ✕
+                    −
                 </button>
+                <span class="w-8 text-center font-bold text-gray-800">
+                    {{ item.quantity }}
+                </span>
+                <button hx-post="/ventas/caja/actualizar/" hx-target="#cart-container" hx-swap="outerHTML"
+                    hx-vals='{"product_id": "{{ item.product_id }}", "quantity": "{{ item.quantity|add:"1" }}"}' class="w-7 h-7 bg-gray-200 rounded-full text-gray-700
+                               font-bold hover:bg-green-100 hover:text-green-600 transition text-sm">
+                    +
+                </button>
+            </div>
 
+            <!-- Subtotal -->
+            <div class="text-right min-w-16">
+                <p class="font-bold text-gray-800 text-sm">
+                    ${{ item.subtotal|floatformat:0 }}
+                </p>
+                <p class="text-xs text-gray-400">
+                    ${{ item.unit_price|floatformat:0 }} c/u
+                </p>
             </div>
-            {% endfor %}
+
+            <!-- Botón eliminar -->
+            <button hx-post="/ventas/caja/eliminar/" hx-target="#cart-container" hx-swap="outerHTML"
+                hx-vals='{"product_id": "{{ item.product_id }}"}'
+                class="text-gray-300 hover:text-red-500 transition text-lg font-bold">
+                ✕
+            </button>
+
+        </div>
+        {% endfor %}
         {% else %}
-            <div class="flex flex-col items-center justify-center py-16 text-gray-300">
-                <span class="text-5xl mb-3">🛒</span>
-                <p class="font-medium">El carrito está vacío</p>
-                <p class="text-sm">Escanea un producto para comenzar</p>
-            </div>
+        <div class="flex flex-col items-center justify-center py-16 text-gray-300">
+            <span class="text-5xl mb-3">🛒</span>
+            <p class="font-medium">El carrito está vacío</p>
+            <p class="text-sm">Escanea un producto para comenzar</p>
+        </div>
         {% endif %}
     </div>
 
@@ -90,42 +79,28 @@
         </div>
 
         {% if cart_items %}
-        <!-- Botones de pago -->
         <div class="flex flex-col gap-2">
-            <button
-                hx-get="/ventas/caja/pago/?method=CASH"
-                hx-target="#payment-modal-container"
+            <button hx-get="{% url 'sales:payment_modal' %}?method=CASH" hx-target="#payment-modal-container"
                 hx-swap="innerHTML"
-                onclick="document.getElementById('payment-modal-container').classList.remove('hidden')"
+                hx-on::after-request="document.getElementById('payment-modal-container').classList.remove('hidden')"
                 class="w-full bg-green-600 text-white py-3 rounded-lg font-bold
-                       hover:bg-green-700 transition text-lg">
+               hover:bg-green-700 transition text-lg">
                 💵 Efectivo
             </button>
-            <button
-                hx-get="/ventas/caja/pago/?method=CARD"
-                hx-target="#payment-modal-container"
+            <button hx-get="{% url 'sales:payment_modal' %}?method=CARD" hx-target="#payment-modal-container"
                 hx-swap="innerHTML"
-                onclick="document.getElementById('payment-modal-container').classList.remove('hidden')"
+                hx-on::after-request="document.getElementById('payment-modal-container').classList.remove('hidden')"
                 class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold
-                       hover:bg-blue-700 transition text-lg">
+               hover:bg-blue-700 transition text-lg">
                 💳 Tarjeta
             </button>
-            <button
-                hx-post="/ventas/caja/vaciar/"
-                hx-target="#cart-container"
-                hx-swap="outerHTML"
-                hx-confirm="¿Seguro que quieres vaciar el carrito?"
-                class="w-full bg-gray-200 text-gray-600 py-2 rounded-lg
-                       hover:bg-gray-300 transition text-sm font-medium">
+            <button hx-post="{% url 'sales:clear_cart' %}" hx-target="#cart-container" hx-swap="outerHTML"
+                hx-confirm="¿Seguro que quieres vaciar el carrito?" class="w-full bg-gray-200 text-gray-600 py-2 rounded-lg
+               hover:bg-gray-300 transition text-sm font-medium">
                 🗑 Vaciar carrito
             </button>
         </div>
         {% endif %}
 
     </div>
-</div>
-
-<!-- Contenedor del modal de pago -->
-<div id="payment-modal-container" class="hidden fixed inset-0 z-50
-     bg-black bg-opacity-50 flex items-center justify-center">
 </div>
