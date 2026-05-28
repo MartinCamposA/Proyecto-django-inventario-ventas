@@ -16,13 +16,21 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.contrib.auth import views as auth_views
 from django.views.generic import RedirectView
 
 urlpatterns = [
-    # Página raíz → redirige automáticamente a la caja
+    # Página raíz → redirige a la caja
     path("", RedirectView.as_view(url="/ventas/caja/"), name="home"),
 
+    # Admin
     path("admin/", admin.site.urls),
+
+    # Autenticación
+    path("login/", auth_views.LoginView.as_view(), name="login"),
+    path("logout/", auth_views.LogoutView.as_view(), name="logout"),
+
+    # Apps
     path("inventario/", include("apps.inventory.urls")),
     path("ventas/", include("apps.sales.urls")),
     path("reportes/", include("apps.reporting.urls")),

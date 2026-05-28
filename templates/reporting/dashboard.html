@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}Reportes — POS System{% endblock %}
+
+{% block content %}
+<div class="flex flex-col gap-6">
+
+    <!-- Header -->
+    <div class="flex justify-between items-center">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-800">📊 Dashboard</h1>
+            <p class="text-gray-500 text-sm mt-1">
+                {{ hoy|date:"l d \d\e F \d\e Y" }}
+            </p>
+        </div>
+        <a href="{% url 'reporting:historial' %}"
+           class="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium
+                  hover:bg-blue-700 transition text-sm">
+            📋 Ver Historial
+        </a>
+    </div>
+
+    <!-- Tarjetas de resumen -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+        <!-- Total ventas -->
+        <div class="bg-white rounded-xl shadow p-5">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-gray-500 text-sm font-medium">Ventas del Día</p>
+                    <p class="text-2xl font-bold text-gray-800 mt-1">
+                        ${{ total_ventas_hoy|floatformat:0 }}
+                    </p>
+                </div>
+                <span class="text-3xl">💰</span>
+            </div>
+            <p class="text-gray-400 text-xs mt-2">
+                {{ cantidad_ventas_hoy }} transacción{{ cantidad_ventas_hoy|pluralize:"es" }}
+            </p>
+        </div>
+
+        <!-- Ganancia -->
+        <div class="bg-white rounded-xl shadow p-5">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-gray-500 text-sm font-medium">Ganancia del Día</p>
+                    <p class="text-2xl font-bold text-green-600 mt-1">
+                        ${{ ganancia_hoy|floatformat:0 }}
+                    </p>
+                </div>
+                <span class="text-3xl">📈</span>
+            </div>
+            <p class="text-gray-400 text-xs mt-2">
+                Precio venta − precio compra
+            </p>
+        </div>
+
+        <!-- Efectivo -->
+        <div class="bg-white rounded-xl shadow p-5">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-gray-500 text-sm font-medium">Efectivo</p>
+                    <p class="text-2xl font-bold text-gray-800 mt-1">
+                        ${{ efectivo_hoy|floatformat:0 }}
+                    </p>
+                </div>
+                <span class="text-3xl">💵</span>
+            </div>
+        </div>
+
+        <!-- Tarjeta -->
+        <div class="bg-white rounded-xl shadow p-5">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-gray-500 text-sm font-medium">Tarjeta</p>
+                    <p class="text-2xl font-bold text-gray-800 mt-1">
+                        ${{ tarjeta_hoy|floatformat:0 }}
+                    </p>
+                </div>
+                <span class="text-3xl">💳</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Producto top + Últimas ventas -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- Producto más vendido -->
+        <div class="bg-white rounded-xl shadow p-5">
+            <h2 class="font-bold text-gray-700 mb-4">🏆 Más Vendido Hoy</h2>
+            {% if producto_top %}
+                <div class="text-center py-4">
+                    <p class="text-4xl mb-2">🥇</p>
+                    <p class="font-bold text-gray-800 text-lg">
+                        {{ producto_top.product__name }}
+                    </p>
+                    <p class="text-gray-500 text-sm mt-1">
+                        {{ producto_top.total_vendido }} unidades vendidas
+                    </p>
+                </div>
+            {% else %}
+                <div class="text-center py-8 text-gray-400">
+                    <p class="text-3xl mb-2">📦</p>
+                    <p class="text-sm">Sin ventas hoy</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Últimas ventas -->
+        <div class="lg:col-span-2 bg-white rounded-xl shadow overflow-hidden">
+            <div class="px-5 py-4 border-b border-gray-100">
+                <h2 class="font-bold text-gray-700">🕒 Últimas Ventas</h2>
+            </div>
+            <table class="w-full text-sm">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="text-left px-4 py-2 text-gray-500 font-medium">#</th>
+                        <th class="text-left px-4 py-2 text-gray-500 font-medium">Hora</th>
+                        <th class="text-left px-4 py-2 text-gray-500 font-medium">Vendedor</th>
+                        <th class="text-left px-4 py-2 text-gray-500 font-medium">Pago</th>
+                        <th class="text-right px-4 py-2 text-gray-500 font-medium">Total</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    {% for venta in ultimas_ventas %}
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="px-4 py-2 text-gray-400 font-mono text-xs">
+                            #{{ venta.id }}
+                        </td>
+                        <td class="px-4 py-2 text-gray-600">
+                            {{ venta.created_at|date:"H:i" }}
+                        </td>
+                        <td class="px-4 py-2 text-gray-600">
+                            {{ venta.seller.username|default:"—" }}
+                        </td>
+                        <td class="px-4 py-2">
+                            {% if venta.payment_method == "CASH" %}
+                                <span class="bg-green-100 text-green-600 px-2 py-0.5 rounded text-xs font-medium">
+                                    Efectivo
+                                </span>
+                            {% else %}
+                                <span class="bg-blue-100 text-blue-600 px-2 py-0.5 rounded text-xs font-medium">
+                                    Tarjeta
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td class="px-4 py-2 text-right font-bold text-gray-800">
+                            ${{ venta.total_amount|floatformat:0 }}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-8 text-gray-400">
+                            Sin ventas registradas
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
