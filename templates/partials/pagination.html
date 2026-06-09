@@ -1,0 +1,64 @@
+{% if page_obj.paginator.num_pages > 1 %}
+<div class="flex items-center justify-between mt-4">
+
+    <!-- Info de páginas -->
+    <p class="text-sm text-gray-500">
+        Mostrando
+        <span class="font-medium">{{ page_obj.start_index }}</span>
+        al
+        <span class="font-medium">{{ page_obj.end_index }}</span>
+        de
+        <span class="font-medium">{{ page_obj.paginator.count }}</span>
+        resultados
+    </p>
+
+    <!-- Botones de navegación -->
+    <div class="flex items-center gap-1">
+
+        <!-- Primera página -->
+        {% if page_obj.has_previous %}
+            <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if request.GET.desde %}desde={{ request.GET.desde }}&{% endif %}{% if request.GET.hasta %}hasta={{ request.GET.hasta }}&{% endif %}page=1"
+               class="px-3 py-1 rounded-lg bg-gray-100 text-gray-600
+                      hover:bg-gray-200 transition text-sm font-medium">
+                «
+            </a>
+            <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if request.GET.desde %}desde={{ request.GET.desde }}&{% endif %}{% if request.GET.hasta %}hasta={{ request.GET.hasta }}&{% endif %}page={{ page_obj.previous_page_number }}"
+               class="px-3 py-1 rounded-lg bg-gray-100 text-gray-600
+                      hover:bg-gray-200 transition text-sm font-medium">
+                ‹ Anterior
+            </a>
+        {% endif %}
+
+        <!-- Páginas numéricas -->
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <span class="px-3 py-1 rounded-lg bg-blue-600 text-white
+                             text-sm font-bold">
+                    {{ num }}
+                </span>
+            {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
+                <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if request.GET.desde %}desde={{ request.GET.desde }}&{% endif %}{% if request.GET.hasta %}hasta={{ request.GET.hasta }}&{% endif %}page={{ num }}"
+                   class="px-3 py-1 rounded-lg bg-gray-100 text-gray-600
+                          hover:bg-gray-200 transition text-sm font-medium">
+                    {{ num }}
+                </a>
+            {% endif %}
+        {% endfor %}
+
+        <!-- Siguiente página -->
+        {% if page_obj.has_next %}
+            <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if request.GET.desde %}desde={{ request.GET.desde }}&{% endif %}{% if request.GET.hasta %}hasta={{ request.GET.hasta }}&{% endif %}page={{ page_obj.next_page_number }}"
+               class="px-3 py-1 rounded-lg bg-gray-100 text-gray-600
+                      hover:bg-gray-200 transition text-sm font-medium">
+                Siguiente ›
+            </a>
+            <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if request.GET.desde %}desde={{ request.GET.desde }}&{% endif %}{% if request.GET.hasta %}hasta={{ request.GET.hasta }}&{% endif %}page={{ page_obj.paginator.num_pages }}"
+               class="px-3 py-1 rounded-lg bg-gray-100 text-gray-600
+                      hover:bg-gray-200 transition text-sm font-medium">
+                »
+            </a>
+        {% endif %}
+
+    </div>
+</div>
+{% endif %}

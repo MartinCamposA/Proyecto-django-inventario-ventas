@@ -75,9 +75,8 @@ def dashboard(request):
 
 @login_required
 def historial(request):
-    """
-    Historial completo de ventas con filtro por fecha.
-    """
+    from django.core.paginator import Paginator
+
     fecha_desde = request.GET.get("desde", "")
     fecha_hasta = request.GET.get("hasta", "")
 
@@ -90,7 +89,6 @@ def historial(request):
     if fecha_hasta:
         ventas = ventas.filter(created_at__date__lte=fecha_hasta)
 
-    # Totales del período filtrado
     totales = ventas.aggregate(
         total_ingresos=Sum("total_amount"),
         cantidad=Count("id"),
@@ -104,8 +102,15 @@ def historial(request):
         )
     )["ganancia"] or Decimal("0")
 
+    # ─── Paginación: 25 ventas por página ────────────────────────────────
+    paginator = Paginator(ventas, 25)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    # ─────────────────────────────────────────────────────────────────────
+
     return render(request, "reporting/historial.html", {
-        "ventas": ventas,
+        "ventas": page_obj,            # ← Ahora es page_obj
+        "page_obj": page_obj,
         "fecha_desde": fecha_desde,
         "fecha_hasta": fecha_hasta,
         "total_ingresos": totales["total_ingresos"] or Decimal("0"),

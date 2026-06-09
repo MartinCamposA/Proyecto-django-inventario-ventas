@@ -2,16 +2,14 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
+from django.core.paginator import Paginator
 
 from .models import Category, Product
 from .forms import CategoryForm, ProductForm
 
 
-# ─── PRODUCTOS ────────────────────────────────────────────────────────────────
-
 @login_required
 def product_list(request):
-    """Lista de productos con búsqueda y filtro por categoría."""
     query = request.GET.get("q", "")
     category_id = request.GET.get("category", "")
 
@@ -27,12 +25,19 @@ def product_list(request):
 
     categories = Category.objects.filter(is_active=True)
 
+    # ─── Paginación: 20 productos por página ─────────────────────────────
+    paginator = Paginator(products, 20)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    # ─────────────────────────────────────────────────────────────────────
+
     return render(request, "inventory/product_list.html", {
-        "products": products,
+        "products": page_obj,          # ← Ahora es page_obj, no products
+        "page_obj": page_obj,
         "categories": categories,
         "query": query,
         "selected_category": category_id,
-        "total_products": products.count(),
+        "total_products": paginator.count,
     })
 
 

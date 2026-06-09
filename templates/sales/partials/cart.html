@@ -8,6 +8,17 @@
         </span>
     </div>
 
+    <!-- ─── Mensaje de error (SKU no encontrado, sin stock, etc) ─────────── -->
+    {% if error_message %}
+    <div class="mx-4 mt-3 bg-red-50 border border-red-200 rounded-lg px-4 py-3
+                flex items-center gap-2">
+        <span class="text-red-500 text-lg">⚠</span>
+        <p class="text-red-600 text-sm font-medium">{{ error_message }}</p>
+    </div>
+    {% endif %}
+    <!-- ─────────────────────────────────────────────────────────────────── -->
+
+
     <!-- Lista de productos en el carrito -->
     <div class="flex-1 overflow-y-auto divide-y divide-gray-100 max-h-96">
         {% if cart_items %}
