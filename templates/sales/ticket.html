@@ -7,12 +7,24 @@
     <div class="bg-white rounded-xl shadow-lg p-6">
 
         <!-- Header ticket -->
-        <div class="text-center border-b pb-4 mb-4">
-            <h1 class="text-2xl font-bold text-gray-800">🧾 Ticket de Venta</h1>
-            <p class="text-gray-500 text-sm mt-1">
+        <!-- Header ticket -->
+        <div class="border-b pb-4 mb-4">
+            <div class="flex items-center justify-center relative">
+                <a href="{% url 'reporting:historial' %}"
+                    class="absolute left-0 text-gray-400 hover:text-gray-600 transition text-2xl">
+                    ←
+                </a>
+
+                <h1 class="text-2xl font-bold text-gray-800">
+                    🧾 Ticket de Venta
+                </h1>
+            </div>
+
+            <p class="text-center text-gray-500 text-sm mt-1">
                 #{{ sale.id }} — {{ sale.created_at|date:"d/m/Y H:i" }}
             </p>
-            <p class="text-gray-500 text-sm">
+
+            <p class="text-center text-gray-500 text-sm">
                 Vendedor: {{ sale.seller.username|default:"Sin asignar" }}
             </p>
         </div>
@@ -60,13 +72,11 @@
 
         <!-- Botones -->
         <div class="flex gap-3">
-            <a href="{% url 'sales:pos' %}"
-               class="flex-1 bg-blue-600 text-white py-3 rounded-lg font-bold
+            <a href="{% url 'sales:pos' %}" class="flex-1 bg-blue-600 text-white py-3 rounded-lg font-bold
                       hover:bg-blue-700 transition text-center">
                 🛒 Nueva Venta
             </a>
-            <button onclick="window.print()"
-                    class="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg
+            <button onclick="window.print()" class="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg
                            font-bold hover:bg-gray-300 transition">
                 🖨 Imprimir
             </button>
