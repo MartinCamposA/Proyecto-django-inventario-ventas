@@ -9,6 +9,10 @@ urlpatterns = [
     path("crear/", views.product_create, name="product_create"),
     path("editar/<int:pk>/", views.product_edit, name="product_edit"),
     path("toggle/<int:pk>/", views.product_toggle, name="product_toggle"),
+    path("eliminar/<int:pk>/", views.product_delete, name="product_delete"),
+
+    # Ajuste de stock
+    path("ajuste-stock/", views.stock_adjustment, name="stock_adjustment"),
 
     # Categorías
     path("categorias/", views.category_list, name="category_list"),
